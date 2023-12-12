@@ -4,36 +4,32 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/adapter.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
-import 'package:chatty/common/store/store.dart';
-import 'package:chatty/common/utils/utils.dart';
-import 'package:chatty/common/values/values.dart';
-import 'package:flutter/material.dart';
+import 'package:chatie/common/store/store.dart';
+import 'package:chatie/common/utils/utils.dart';
+import 'package:chatie/common/values/values.dart';
+// import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart' hide FormData;
-
 
 class HttpUtil {
   static HttpUtil _instance = HttpUtil._internal();
   factory HttpUtil() => _instance;
 
   late Dio dio;
-  CancelToken cancelToken = new CancelToken();
-
+  CancelToken cancelToken =  CancelToken();
 
   HttpUtil._internal() {
     // BaseOptions、Options、RequestOptions 都可以配置参数，优先级别依次递增，且可以根据优先级别覆盖参数
-    BaseOptions options = new BaseOptions(
-      // 请求基地址,可以包含子路径
+    BaseOptions options = BaseOptions(
+      
       baseUrl: SERVER_API_URL,
 
       // baseUrl: storage.read(key: STORAGE_KEY_APIURL) ?? SERVICE_API_BASEURL,
-      //连接服务器超时时间，单位是毫秒.
-      connectTimeout: 10000,
+      connectTimeout: const Duration(seconds: 10),
 
-      // 响应流上前后两次接受到数据的间隔，单位为毫秒。
-      receiveTimeout: 5000,
+      receiveTimeout: const Duration(seconds: 5),
 
-      // Http请求头.
+     
       headers: {},
 
       /// 请求的Content-Type，默认值是"application/json; charset=utf-8".
@@ -54,7 +50,7 @@ class HttpUtil {
 
     dio = new Dio(options);
 
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+    (dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
         (HttpClient client) {
       client.badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
@@ -244,7 +240,6 @@ class HttpUtil {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-
     Options requestOptions = options ?? Options();
     requestOptions.headers = requestOptions.headers ?? {};
     Map<String, dynamic>? authorization = getAuthorizationHeader();
